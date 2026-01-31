@@ -2,17 +2,18 @@
 import { supabase } from './supabaseClient';
 import { FinancialCard, Transaction, CardType, TransactionType, Profile, Subscription, BillingCycle } from '../types';
 
+const getCurrentUserId = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) return user.id;
+
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.user?.id || null;
+};
+
 export const db = {
     // Profiles
     async getProfile(): Promise<Profile | null> {
-        const { data: { user } } = await supabase.auth.getUser();
-        let userId = user?.id;
-
-        if (!userId) {
-            const { data: { session } } = await supabase.auth.getSession();
-            userId = session?.user?.id;
-        }
-
+        const userId = await getCurrentUserId();
         if (!userId) return null;
 
         const { data, error } = await supabase
@@ -29,11 +30,11 @@ export const db = {
     },
 
     async updateProfile(updates: Partial<Profile>): Promise<Profile | null> {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('Usuario no autenticado');
+        const userId = await getCurrentUserId();
+        if (!userId) throw new Error('Usuario no autenticado');
 
         const { error } = await supabase.from('profiles').upsert({
-            id: user.id,
+            id: userId,
             ...updates,
             updated_at: new Date().toISOString(),
         });
@@ -41,14 +42,18 @@ export const db = {
         if (error) {
             throw error;
         }
-        return { id: user.id, ...updates } as Profile;
+        return { id: userId, ...updates } as Profile;
     },
 
     // Cards
     async getCards(): Promise<FinancialCard[]> {
+        const userId = await getCurrentUserId();
+        if (!userId) return [];
+
         const { data, error } = await supabase
             .from('tarjetas')
-            .select('*');
+            .select('*')
+            .eq('user_id', userId);
 
         if (error) {
             console.error('Error fetching cards:', error);
@@ -70,14 +75,14 @@ export const db = {
     },
 
     async saveCard(card: FinancialCard): Promise<FinancialCard | null> {
-        const { data: userData, error: userError } = await supabase.auth.getUser();
-        if (userError || !userData.user) throw new Error('Usuario no autenticado');
+        const userId = await getCurrentUserId();
+        if (!userId) throw new Error('Usuario no autenticado');
 
         const { error } = await supabase
             .from('tarjetas')
             .upsert({
                 id: card.id,
-                user_id: userData.user.id,
+                user_id: userId,
                 name: card.name,
                 type: card.type,
                 initial_balance: card.initialBalance,
@@ -97,15 +102,27 @@ export const db = {
     },
 
     async deleteCard(cardId: string) {
-        const { error } = await supabase.from('tarjetas').delete().eq('id', cardId);
+        const userId = await getCurrentUserId();
+        if (!userId) throw new Error('Usuario no autenticado');
+
+        const { error } = await supabase
+            .from('tarjetas')
+            .delete()
+            .eq('id', cardId)
+            .eq('user_id', userId);
+
         if (error) throw error;
     },
 
     // Transactions
     async getTransactions(): Promise<Transaction[]> {
+        const userId = await getCurrentUserId();
+        if (!userId) return [];
+
         const { data, error } = await supabase
             .from('movimientos')
-            .select('*');
+            .select('*')
+            .eq('user_id', userId);
 
         if (error) {
             console.error('Error fetching transactions:', error);
@@ -129,14 +146,14 @@ export const db = {
     },
 
     async saveTransaction(tx: Transaction): Promise<Transaction | null> {
-        const { data: userData, error: userError } = await supabase.auth.getUser();
-        if (userError || !userData.user) throw new Error('Usuario no autenticado');
+        const userId = await getCurrentUserId();
+        if (!userId) throw new Error('Usuario no autenticado');
 
         const { error } = await supabase
             .from('movimientos')
             .upsert({
                 id: tx.id,
-                user_id: userData.user.id,
+                user_id: userId,
                 amount: tx.amount,
                 description: tx.description,
                 type: tx.type,
@@ -157,15 +174,27 @@ export const db = {
     },
 
     async deleteTransaction(txId: string) {
-        const { error } = await supabase.from('movimientos').delete().eq('id', txId);
+        const userId = await getCurrentUserId();
+        if (!userId) throw new Error('Usuario no autenticado');
+
+        const { error } = await supabase
+            .from('movimientos')
+            .delete()
+            .eq('id', txId)
+            .eq('user_id', userId);
+
         if (error) throw error;
     },
 
     // Subscriptions
     async getSubscriptions(): Promise<Subscription[]> {
+        const userId = await getCurrentUserId();
+        if (!userId) return [];
+
         const { data, error } = await supabase
             .from('suscripciones')
-            .select('*');
+            .select('*')
+            .eq('user_id', userId);
 
         if (error) {
             console.error('Error fetching subscriptions:', error);
@@ -186,14 +215,14 @@ export const db = {
     },
 
     async saveSubscription(sub: Subscription): Promise<Subscription | null> {
-        const { data: userData, error: userError } = await supabase.auth.getUser();
-        if (userError || !userData.user) throw new Error('Usuario no autenticado');
+        const userId = await getCurrentUserId();
+        if (!userId) throw new Error('Usuario no autenticado');
 
         const { error } = await supabase
             .from('suscripciones')
             .upsert({
                 id: sub.id,
-                user_id: userData.user.id,
+                user_id: userId,
                 name: sub.name,
                 amount: sub.amount,
                 card_id: sub.cardId,
@@ -212,7 +241,15 @@ export const db = {
     },
 
     async deleteSubscription(subId: string) {
-        const { error } = await supabase.from('suscripciones').delete().eq('id', subId);
+        const userId = await getCurrentUserId();
+        if (!userId) throw new Error('Usuario no autenticado');
+
+        const { error } = await supabase
+            .from('suscripciones')
+            .delete()
+            .eq('id', subId)
+            .eq('user_id', userId);
+
         if (error) throw error;
     }
 };
