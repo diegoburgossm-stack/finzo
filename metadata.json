@@ -1,0 +1,7 @@
+{
+  "name": "Finzo - Gestor de Gastos",
+  "description": "Una aplicación moderna para gestionar tarjetas, saldos y transacciones en Pesos Chilenos (CLP) con asistencia de IA.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
