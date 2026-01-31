@@ -153,7 +153,7 @@ export const CardComponent: React.FC<CardComponentProps> = ({
         <div className="absolute -top-3 -right-3 z-20 flex gap-2">
           {onEdit && (
             <button
-              onClick={onEdit}
+              onClick={(e) => { e.stopPropagation(); onEdit(e); }}
               className="p-3 bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white hover:text-primary rounded-full shadow-lg transition-all transform hover:scale-110"
               title="Editar tarjeta"
               aria-label={`Editar tarjeta ${card.name}`}
@@ -163,7 +163,7 @@ export const CardComponent: React.FC<CardComponentProps> = ({
           )}
           {onDelete && (
             <button
-              onClick={onDelete}
+              onClick={(e) => { e.stopPropagation(); onDelete(e); }}
               className="p-3 bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-red-500 hover:text-white rounded-full shadow-lg transition-all transform hover:scale-110"
               title="Eliminar tarjeta"
               aria-label={`Eliminar tarjeta ${card.name}`}

@@ -285,11 +285,16 @@ function App() {
 
   const handleLogout = async () => {
     try {
+      console.log("Cerrando sesión...");
       await supabase.auth.signOut();
       setCards([]);
       setTransactions([]);
+      setSubscriptions([]);
+      // Force reload to clear all states and caches
+      window.location.href = window.location.pathname;
     } catch (error) {
       console.error("Error signing out:", error);
+      alert("Error al cerrar sesión");
     }
   };
 
@@ -719,13 +724,16 @@ function App() {
         await db.saveCard(toSave);
         setCards(prev => prev.map(c => c.id === editingCard.id ? toSave : c));
         console.log("Tarjeta actualizada correctamente");
+        alert("Tarjeta actualizada con éxito");
       } else {
         const toSave = { id: generateId(), ...cardData };
         await db.saveCard(toSave);
         setCards(prev => [...prev, toSave]);
         console.log("Nueva tarjeta creada correctamente");
+        alert("Tarjeta creada con éxito");
       }
       setIsCardModalOpen(false);
+      setEditingCard(null);
     } catch (error: any) {
       console.error("Error al guardar tarjeta:", error);
       alert("Error guardando tarjeta: " + (error.message || error));
@@ -1229,10 +1237,10 @@ function App() {
               </div>
             )}
             <div className={`p-4 rounded-xl border ${theme === 'dark' ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200 shadow-sm'}`}>
-              <div className="flex items-center justify-between mb-3"><h4 className="text-sm font-bold flex items-center gap-2"><Bell size={16} /> Recordatorio</h4>{selectedCard?.reminderDate && <button onClick={handleClearReminder} className="text-xs text-red-400">Borrar</button>}</div>
-              <div className="flex gap-2"><input type="date" className={`flex-1 rounded-lg px-3 py-2 text-sm ${theme === 'dark' ? 'bg-slate-900 border border-slate-600 text-white' : 'bg-slate-50 border border-slate-300'}`} value={reminderDateInput || selectedCard?.reminderDate || ''} onChange={(e) => setReminderDateInput(e.target.value)} /><Button onClick={handleSetReminder} disabled={!reminderDateInput} className="text-xs py-2 px-3">Guardar</Button></div>
+              <div className="flex items-center justify-between mb-3"><h4 className="text-sm font-bold flex items-center gap-2"><Bell size={16} /> Recordatorio</h4>{selectedCard?.reminderDate && <button onClick={(e) => { e.stopPropagation(); handleClearReminder(); }} className="text-xs text-red-400">Borrar</button>}</div>
+              <div className="flex gap-2"><input type="date" className={`flex-1 rounded-lg px-3 py-2 text-sm ${theme === 'dark' ? 'bg-slate-900 border border-slate-600 text-white' : 'bg-slate-50 border border-slate-300'}`} value={reminderDateInput || selectedCard?.reminderDate || ''} onChange={(e) => setReminderDateInput(e.target.value)} /><Button onClick={(e) => { e.stopPropagation(); handleSetReminder(); }} disabled={!reminderDateInput} className="text-xs py-2 px-3">Guardar</Button></div>
             </div>
-            <div className="flex gap-3"><button onClick={() => handleOpenTxModal()} className={`flex-1 border py-3 rounded-xl font-medium flex items-center justify-center gap-2 transition-all ${theme === 'dark' ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200'}`}><Plus size={18} /><span>Movimiento</span></button>{isSelectedCardCredit && <button onClick={handlePayCard} className="flex-1 bg-emerald-500/10 border border-emerald-500/50 text-emerald-400 py-3 rounded-xl font-medium flex items-center justify-center gap-2"><Zap size={18} /><span>Pagar</span></button>}</div>
+            <div className="flex gap-3"><button onClick={(e) => { e.stopPropagation(); handleOpenTxModal(); }} className={`flex-1 border py-3 rounded-xl font-medium flex items-center justify-center gap-2 transition-all ${theme === 'dark' ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 hover:bg-slate-50'}`}><Plus size={18} /><span>Movimiento</span></button>{isSelectedCardCredit && <button onClick={(e) => { e.stopPropagation(); handlePayCard(); }} className="flex-1 bg-emerald-500/10 border border-emerald-500/50 text-emerald-400 py-3 rounded-xl font-medium flex items-center justify-center gap-2 hover:bg-emerald-500/20"><Zap size={18} /><span>Pagar</span></button>}</div>
           </div>
           <div className="lg:col-span-7 mt-8 lg:mt-0"><TransactionList transactions={filteredTransactions} cards={cards} onEdit={handleOpenTxModal} onDelete={requestDeleteTx} title={`Movimientos de ${selectedCard?.name}`} theme={theme} /></div>
         </div>
