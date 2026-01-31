@@ -1224,7 +1224,7 @@ function App() {
   const renderDesktopSidebar = () => (
     <aside className={`hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 border-r z-50 backdrop-blur-xl ${theme === 'dark' ? 'bg-surface/30 border-slate-800' : 'bg-white/80 border-slate-200'}`}>
       <div className="p-6 flex items-center gap-3">
-        <img src={theme === 'dark' ? "/logo_oscuro.png" : "/logo.png"} alt="Finzo" className="w-10 h-10 object-contain" />
+        <img src={theme === 'dark' ? "logo_oscuro.png" : "logo.png"} alt="Finzo" className="w-10 h-10 object-contain" />
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setIsProfileModalOpen(true)}>
           <div className={`w-10 h-10 rounded-full overflow-hidden border-2 flex items-center justify-center ${theme === 'dark' ? 'border-slate-600 bg-slate-800' : 'border-slate-200 bg-slate-100'}`}>
             {useAuth().profile?.avatar_url ? (
@@ -1248,13 +1248,19 @@ function App() {
           </div>
         )}
       </div>
-      <nav className="flex-1 px-4 space-y-2">{['home', 'cards', 'transactions', 'subscriptions', 'settings'].map((tab) => (
+      <nav className="flex-1 px-4 space-y-2">{['home', 'cards', 'transactions', 'subscriptions'].map((tab) => (
         <button key={tab} onClick={() => handleTabChange(tab as TabView)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === tab && !selectedCardId ? (theme === 'dark' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-primary font-semibold') : (theme === 'dark' ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100')}`}>
-          {tab === 'home' ? <Home size={20} /> : tab === 'cards' ? <CreditCard size={20} /> : tab === 'transactions' ? <List size={20} /> : tab === 'subscriptions' ? <Repeat size={20} /> : <Settings size={20} />}
-          <span className="font-medium capitalize">{tab === 'home' ? 'Inicio' : tab === 'cards' ? 'Tarjetas' : tab === 'transactions' ? 'Movimientos' : tab === 'subscriptions' ? 'Suscripciones' : 'Ajustes'}</span>
+          {tab === 'home' ? <Home size={20} /> : tab === 'cards' ? <CreditCard size={20} /> : tab === 'transactions' ? <List size={20} /> : <Repeat size={20} />}
+          <span className="font-medium capitalize">{tab === 'home' ? 'Inicio' : tab === 'cards' ? 'Tarjetas' : tab === 'transactions' ? 'Movimientos' : 'Suscripciones'}</span>
         </button>
       ))}</nav>
-      <div className={`p-4 border-t ${theme === 'dark' ? 'border-slate-800' : 'border-slate-200'}`}><button onClick={handleGetAdvice} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400"><Sparkles size={20} /><span className="font-medium">Asistente IA</span></button></div>
+      <div className={`p-4 border-t space-y-2 ${theme === 'dark' ? 'border-slate-800' : 'border-slate-200'}`}>
+        <button onClick={() => handleTabChange('settings')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'settings' && !selectedCardId ? (theme === 'dark' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-primary font-semibold') : (theme === 'dark' ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100')}`}>
+          <Settings size={20} />
+          <span className="font-medium">Ajustes</span>
+        </button>
+        <button onClick={handleGetAdvice} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400"><Sparkles size={20} /><span className="font-medium">Asistente IA</span></button>
+      </div>
     </aside>
   );
 
@@ -1267,7 +1273,7 @@ function App() {
       <div className="flex-1 w-full lg:pl-64">
         {isMenuOpen && <div className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)} />}
         <header className={`sticky top-0 z-20 backdrop-blur-md border-b lg:hidden ${theme === 'dark' ? 'bg-[#0f172a]/80 border-slate-800' : 'bg-white/80 border-slate-200'}`}>
-          <div className="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center"><div className="flex items-center gap-3">{selectedCardId && <button onClick={() => setSelectedCardId(null)} className="p-2 -ml-2"><ArrowLeft size={20} /></button>}<h1 className={`text-xl font-black flex items-center gap-2 tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{selectedCardId ? <Wallet className="text-primary" /> : <img src={theme === 'dark' ? "/logo_oscuro.png" : "/logo.png"} alt="Finzo" className="w-6 h-6 object-contain" />}{selectedCardId ? selectedCard?.name : <>Fin<span className="text-primary -ml-1.5">zo</span></>}</h1></div><button onClick={handleGetAdvice} className="p-2 text-purple-400 bg-purple-500/10 rounded-full border border-purple-500/30"><Sparkles size={20} /></button></div>
+          <div className="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center"><div className="flex items-center gap-3">{selectedCardId && <button onClick={() => setSelectedCardId(null)} className="p-2 -ml-2"><ArrowLeft size={20} /></button>}<h1 className={`text-xl font-black flex items-center gap-2 tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{selectedCardId ? <Wallet className="text-primary" /> : <img src={theme === 'dark' ? "logo_oscuro.png" : "logo.png"} alt="Finzo" className="w-6 h-6 object-contain" />}{selectedCardId ? selectedCard?.name : <>Fin<span className="text-primary -ml-1.5">zo</span></>}</h1></div><div className="flex items-center gap-2"><button onClick={() => handleTabChange('settings')} className={`p-2 rounded-full border transition-all ${activeTab === 'settings' ? (theme === 'dark' ? 'bg-primary text-white border-primary' : 'bg-primary text-white border-primary') : (theme === 'dark' ? 'text-slate-400 bg-slate-800 border-slate-700' : 'text-slate-600 bg-slate-50 border-slate-200')}`}><Settings size={20} /></button><button onClick={handleGetAdvice} className="p-2 text-purple-400 bg-purple-500/10 rounded-full border border-purple-500/30"><Sparkles size={20} /></button></div></div>
         </header>
         <main className="w-full max-w-7xl mx-auto px-4 py-6 min-h-[calc(100vh-140px)] relative z-10 lg:py-10 lg:px-8">
           <div key={selectedCardId || activeTab} className="page-transition">
@@ -1294,7 +1300,6 @@ function App() {
           {['subscriptions', 'transactions'].map((tab) => (
             <button key={tab} onClick={() => handleTabChange(tab as TabView)} className={`flex flex-col items-center gap-1 p-2 ${activeTab === tab && !selectedCardId ? 'text-primary' : 'text-slate-400'}`}>{tab === 'subscriptions' ? <Repeat size={22} /> : <List size={22} />}<span className="text-[10px]">{tab === 'subscriptions' ? 'Suscrip.' : 'Movim.'}</span></button>
           ))}
-          <button onClick={() => handleTabChange('settings')} className={`flex flex-col items-center gap-1 p-2 ${activeTab === 'settings' && !selectedCardId ? 'text-primary' : 'text-slate-400'}`}><Settings size={22} /><span className="text-[10px]">Ajustes</span></button>
         </div>
       </nav>
 

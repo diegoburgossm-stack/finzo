@@ -56,7 +56,7 @@ export const LandingPage: React.FC = () => {
         <div className="flex flex-col items-center gap-6">
           <div className="relative">
             <div className="w-24 h-24 bg-[#1e293b] rounded-3xl flex items-center justify-center shadow-2xl border border-slate-700 transform rotate-3">
-              <img src="/logo_oscuro.png" alt="Finzo" className="w-16 h-16 object-contain" />
+              <img src="logo_oscuro.png" alt="Finzo" className="w-16 h-16 object-contain" />
             </div>
             <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#1e293b] rounded-2xl flex items-center justify-center shadow-xl border border-slate-700 transform -rotate-6 animate-bounce">
               <Sparkles className="text-purple-400 w-6 h-6" />
