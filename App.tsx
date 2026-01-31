@@ -1187,9 +1187,17 @@ function App() {
           </div>
         </div>
 
-        <div className="p-4">
-
-          <div className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${theme === 'dark' ? 'hover:bg-slate-800' : 'hover:bg-slate-100'}`} onClick={handleLogout}><div className="flex items-center gap-3 text-slate-400"><LogOut size={18} /><span>Cerrar Sesión</span></div></div>
+        <div className="p-4 border-t border-inherit">
+          <button
+            onClick={handleLogout}
+            id="btn-cerrar-sesion"
+            className={`w-full flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${theme === 'dark' ? 'hover:bg-red-500/10 text-red-400' : 'hover:bg-red-50 text-red-500'}`}
+          >
+            <div className="flex items-center gap-3">
+              <LogOut size={18} />
+              <span className="font-medium">Cerrar Sesión</span>
+            </div>
+          </button>
         </div>
       </div>
     </div>

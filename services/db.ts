@@ -6,12 +6,19 @@ export const db = {
     // Profiles
     async getProfile(): Promise<Profile | null> {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return null;
+        let userId = user?.id;
+
+        if (!userId) {
+            const { data: { session } } = await supabase.auth.getSession();
+            userId = session?.user?.id;
+        }
+
+        if (!userId) return null;
 
         const { data, error } = await supabase
             .from('profiles')
             .select(`*`)
-            .eq('id', user.id)
+            .eq('id', userId)
             .single();
 
         if (error && error.code !== 'PGRST116') {
