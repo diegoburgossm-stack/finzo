@@ -1,80 +1,102 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Finzo</title>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Finzo">
-    <link rel="apple-touch-icon" href="/logo.png">
-    <meta name="theme-color" content="#0f172a">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              background: '#0f172a',
-              surface: '#1e293b',
-              primary: '#3b82f6',
-              secondary: '#64748b',
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finzo</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Finzo">
+  <link rel="apple-touch-icon" href="logo.png">
+  <meta name="theme-color" content="#0f172a">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            background: '#0f172a',
+            surface: '#1e293b',
+            primary: '#3b82f6',
+            secondary: '#64748b',
+          },
+          animation: {
+            'fade-in-up': 'fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+            'scale-in': 'scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+          },
+          keyframes: {
+            fadeInUp: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
             },
-            animation: {
-              'fade-in-up': 'fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-              'scale-in': 'scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-            },
-            keyframes: {
-              fadeInUp: {
-                '0%': { opacity: '0', transform: 'translateY(10px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
-              },
-              scaleIn: {
-                '0%': { opacity: '0', transform: 'scale(0.97)' },
-                '100%': { opacity: '1', transform: 'scale(1)' },
-              }
+            scaleIn: {
+              '0%': { opacity: '0', transform: 'scale(0.97)' },
+              '100%': { opacity: '1', transform: 'scale(1)' },
             }
           }
         }
       }
-    </script>
-    <style>
-      body {
-        background-color: #0f172a;
-        color: #f8fafc;
-        overflow-x: hidden;
-      }
-      /* Custom Scrollbar for card list */
-      .hide-scroll::-webkit-scrollbar {
-        display: none;
-      }
-      .hide-scroll {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      overflow-x: hidden;
+    }
+
+    /* Custom Scrollbar for card list */
+    .hide-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .hide-scroll {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Modern Page Transitions */
+    .page-transition {
+      animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both,
+        fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* Optimized animations */
+    .animate-in {
+      animation-fill-mode: both;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
       }
 
-      /* Modern Page Transitions */
-      .page-transition {
-        animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both,
-                   fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+      to {
+        opacity: 1;
+      }
+    }
+
+    .slide-in-from-bottom-4 {
+      animation: slideInFromBottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideInFromBottom {
+      from {
+        transform: translateY(1rem);
+        opacity: 0;
       }
 
-      /* Optimized animations */
-      .animate-in {
-        animation-fill-mode: both;
+      to {
+        transform: translateY(0);
+        opacity: 1;
       }
-      
-      .fade-in { animation: fadeIn 0.4s ease-out; }
-      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-      .slide-in-from-bottom-4 { 
-        animation: slideInFromBottom 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
-      }
-      @keyframes slideInFromBottom { 
-        from { transform: translateY(1rem); opacity: 0; } 
-        to { transform: translateY(0); opacity: 1; } 
-      }
-    </style>
+    }
+  </style>
   <script type="importmap">
 {
   "imports": {
@@ -88,10 +110,11 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
 </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="index.tsx"></script>
+</body>
+
 </html>

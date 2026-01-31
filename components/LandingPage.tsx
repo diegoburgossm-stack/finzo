@@ -55,11 +55,12 @@ export const LandingPage: React.FC = () => {
         {/* Header Section */}
         <div className="flex flex-col items-center gap-6">
           <div className="relative">
-            <div className="w-24 h-24 bg-[#1e293b] rounded-3xl flex items-center justify-center shadow-2xl border border-slate-700 transform rotate-3">
-              <img src="logo_oscuro.png" alt="Finzo" className="w-16 h-16 object-contain" />
+            <div className="w-24 h-24 bg-white/95 rounded-3xl flex items-center justify-center shadow-2xl border border-white/20 transform rotate-3 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent pointer-events-none" />
+              <img src="logo.png" alt="Finzo" className="w-16 h-16 object-contain relative z-10" />
             </div>
-            <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#1e293b] rounded-2xl flex items-center justify-center shadow-xl border border-slate-700 transform -rotate-6 animate-bounce">
-              <Sparkles className="text-purple-400 w-6 h-6" />
+            <div className="absolute -top-4 -right-4 w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-xl border border-slate-200 transform -rotate-6 animate-bounce">
+              <Sparkles className="text-blue-500 w-6 h-6" />
             </div>
           </div>
 
