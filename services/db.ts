@@ -52,8 +52,7 @@ export const db = {
 
         const { data, error } = await supabase
             .from('tarjetas')
-            .select('*')
-            .eq('user_id', userId);
+            .select('*');
 
         if (error) {
             console.error('Error fetching cards:', error);
@@ -108,8 +107,7 @@ export const db = {
         const { error } = await supabase
             .from('tarjetas')
             .delete()
-            .eq('id', cardId)
-            .eq('user_id', userId);
+            .eq('id', cardId);
 
         if (error) throw error;
     },
@@ -121,8 +119,7 @@ export const db = {
 
         const { data, error } = await supabase
             .from('movimientos')
-            .select('*')
-            .eq('user_id', userId);
+            .select('*');
 
         if (error) {
             console.error('Error fetching transactions:', error);
@@ -180,8 +177,7 @@ export const db = {
         const { error } = await supabase
             .from('movimientos')
             .delete()
-            .eq('id', txId)
-            .eq('user_id', userId);
+            .eq('id', txId);
 
         if (error) throw error;
     },
@@ -193,8 +189,7 @@ export const db = {
 
         const { data, error } = await supabase
             .from('suscripciones')
-            .select('*')
-            .eq('user_id', userId);
+            .select('*');
 
         if (error) {
             console.error('Error fetching subscriptions:', error);
@@ -247,8 +242,7 @@ export const db = {
         const { error } = await supabase
             .from('suscripciones')
             .delete()
-            .eq('id', subId)
-            .eq('user_id', userId);
+            .eq('id', subId);
 
         if (error) throw error;
     }

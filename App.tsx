@@ -285,16 +285,27 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      console.log("Cerrando sesión...");
-      await supabase.auth.signOut();
+      console.log("Iniciando cierre de sesión forzado...");
+
+      // Clear all local storage related to auth just in case
+      localStorage.removeItem('supabase.auth.token');
+      sessionStorage.clear();
+
+      const { error } = await supabase.auth.signOut();
+      if (error) console.error("Error en signOut:", error);
+
       setCards([]);
       setTransactions([]);
       setSubscriptions([]);
-      // Force reload to clear all states and caches
-      window.location.href = window.location.pathname;
+
+      // Small delay to ensure state updates or cleanup
+      setTimeout(() => {
+        window.location.href = window.location.origin + window.location.pathname;
+      }, 300);
     } catch (error) {
-      console.error("Error signing out:", error);
-      alert("Error al cerrar sesión");
+      console.error("Critical error during logout:", error);
+      // Last resort forceful reload
+      window.location.href = window.location.origin + window.location.pathname;
     }
   };
 
@@ -1288,7 +1299,14 @@ function App() {
           <Settings size={20} />
           <span className="font-medium">Ajustes</span>
         </button>
-        <button onClick={handleGetAdvice} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400"><Sparkles size={20} /><span className="font-medium">Asistente IA</span></button>
+        <button onClick={handleGetAdvice} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 mb-2"><Sparkles size={20} /><span className="font-medium">Asistente IA</span></button>
+        <button
+          onClick={handleLogout}
+          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all border border-transparent ${theme === 'dark' ? 'text-red-400 hover:bg-red-500/10 hover:border-red-500/20' : 'text-red-600 hover:bg-red-50 hover:border-red-200'}`}
+        >
+          <LogOut size={20} />
+          <span className="font-medium">Cerrar Sesión</span>
+        </button>
       </div>
     </aside>
   );
