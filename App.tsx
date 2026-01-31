@@ -588,15 +588,18 @@ function App() {
     let savedTx: Transaction | null = null;
 
     try {
+      console.log("Intentando guardar movimiento:", txData);
       if (editingTx) {
         const toSave = { ...editingTx, ...txData } as Transaction;
         savedTx = await db.saveTransaction(toSave);
+        console.log("Movimiento actualizado exitosamente:", savedTx);
         if (savedTx) {
           setTransactions(prev => prev.map(t => t.id === editingTx.id ? savedTx! : t));
         }
       } else {
         const toSave = { id: generateId(), ...txData } as Transaction;
         savedTx = await db.saveTransaction(toSave);
+        console.log("Nuevo movimiento creado exitosamente:", savedTx);
         if (savedTx) {
           setTransactions(prev => [...prev, savedTx!]);
         }
@@ -710,17 +713,21 @@ function App() {
     };
 
     try {
+      console.log("Intentando guardar tarjeta:", cardData);
       if (editingCard) {
         const toSave = { ...editingCard, ...cardData, id: editingCard.id, reminderDate: editingCard.reminderDate };
         await db.saveCard(toSave);
         setCards(prev => prev.map(c => c.id === editingCard.id ? toSave : c));
+        console.log("Tarjeta actualizada correctamente");
       } else {
         const toSave = { id: generateId(), ...cardData };
         await db.saveCard(toSave);
         setCards(prev => [...prev, toSave]);
+        console.log("Nueva tarjeta creada correctamente");
       }
       setIsCardModalOpen(false);
     } catch (error: any) {
+      console.error("Error al guardar tarjeta:", error);
       alert("Error guardando tarjeta: " + (error.message || error));
     }
   };
@@ -795,14 +802,18 @@ function App() {
     };
 
     try {
+      console.log("Intentando guardar suscripción:", subData);
       await db.saveSubscription(subData);
       if (editingSubscription) {
         setSubscriptions(prev => prev.map(s => s.id === editingSubscription.id ? subData : s));
+        console.log("Suscripción actualizada");
       } else {
         setSubscriptions(prev => [...prev, subData]);
+        console.log("Suscripción creada");
       }
       setIsSubscriptionModalOpen(false);
     } catch (error: any) {
+      console.error("Error al guardar suscripción:", error);
       alert("Error guardando suscripción: " + (error.message || error));
     }
   };
@@ -1232,7 +1243,9 @@ function App() {
   const renderDesktopSidebar = () => (
     <aside className={`hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 border-r z-50 backdrop-blur-xl ${theme === 'dark' ? 'bg-surface/30 border-slate-800' : 'bg-white/80 border-slate-200'}`}>
       <div className="p-6 flex items-center gap-3">
-        <img src={theme === 'dark' ? "logo_oscuro.png" : "logo.png"} alt="Finzo" className="w-10 h-10 object-contain" />
+        <div className={`p-1.5 rounded-xl ${theme === 'dark' ? 'bg-white' : 'bg-slate-100 border border-slate-200'}`}>
+          <img src="logo.png" alt="Finzo" className="w-8 h-8 object-contain" />
+        </div>
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setIsProfileModalOpen(true)}>
           <div className={`w-10 h-10 rounded-full overflow-hidden border-2 flex items-center justify-center ${theme === 'dark' ? 'border-slate-600 bg-slate-800' : 'border-slate-200 bg-slate-100'}`}>
             {useAuth().profile?.avatar_url ? (
@@ -1281,7 +1294,7 @@ function App() {
       <div className="flex-1 w-full lg:pl-64">
         {isMenuOpen && <div className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)} />}
         <header className={`sticky top-0 z-20 backdrop-blur-md border-b lg:hidden ${theme === 'dark' ? 'bg-[#0f172a]/80 border-slate-800' : 'bg-white/80 border-slate-200'}`}>
-          <div className="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center"><div className="flex items-center gap-3">{selectedCardId && <button onClick={() => setSelectedCardId(null)} className="p-2 -ml-2"><ArrowLeft size={20} /></button>}<h1 className={`text-xl font-black flex items-center gap-2 tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{selectedCardId ? <Wallet className="text-primary" /> : <img src={theme === 'dark' ? "logo_oscuro.png" : "logo.png"} alt="Finzo" className="w-6 h-6 object-contain" />}{selectedCardId ? selectedCard?.name : <>Fin<span className="text-primary -ml-1.5">zo</span></>}</h1></div><div className="flex items-center gap-2"><button onClick={() => handleTabChange('settings')} className={`p-2 rounded-full border transition-all ${activeTab === 'settings' ? (theme === 'dark' ? 'bg-primary text-white border-primary' : 'bg-primary text-white border-primary') : (theme === 'dark' ? 'text-slate-400 bg-slate-800 border-slate-700' : 'text-slate-600 bg-slate-50 border-slate-200')}`}><Settings size={20} /></button><button onClick={handleGetAdvice} className="p-2 text-purple-400 bg-purple-500/10 rounded-full border border-purple-500/30"><Sparkles size={20} /></button></div></div>
+          <div className="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center"><div className="flex items-center gap-3">{selectedCardId && <button onClick={() => setSelectedCardId(null)} className="p-2 -ml-2"><ArrowLeft size={20} /></button>}<h1 className={`text-xl font-black flex items-center gap-2 tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{selectedCardId ? <Wallet className="text-primary" /> : <div className={`p-1 rounded-lg ${theme === 'dark' ? 'bg-white' : 'bg-slate-100'}`}><img src="logo.png" alt="Finzo" className="w-6 h-6 object-contain" /></div>}{selectedCardId ? selectedCard?.name : <>Fin<span className="text-primary -ml-1.5">zo</span></>}</h1></div><div className="flex items-center gap-2"><button onClick={() => handleTabChange('settings')} className={`p-2 rounded-full border transition-all ${activeTab === 'settings' ? (theme === 'dark' ? 'bg-primary text-white border-primary' : 'bg-primary text-white border-primary') : (theme === 'dark' ? 'text-slate-400 bg-slate-800 border-slate-700' : 'text-slate-600 bg-slate-50 border-slate-200')}`}><Settings size={20} /></button><button onClick={handleGetAdvice} className="p-2 text-purple-400 bg-purple-500/10 rounded-full border border-purple-500/30"><Sparkles size={20} /></button></div></div>
         </header>
         <main className="w-full max-w-7xl mx-auto px-4 py-6 min-h-[calc(100vh-140px)] relative z-10 lg:py-10 lg:px-8">
           <div key={selectedCardId || activeTab} className="page-transition">
