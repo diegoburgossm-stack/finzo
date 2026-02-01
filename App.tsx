@@ -282,27 +282,28 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      console.log("Iniciando cierre de sesión forzado...");
+      console.log("Cerrando sesión...");
 
-      // Clear all local storage related to auth just in case
-      localStorage.removeItem('supabase.auth.token');
-      sessionStorage.clear();
-
+      // Use Supabase's built-in signOut - it handles cleanup properly
       const { error } = await supabase.auth.signOut();
-      if (error) console.error("Error en signOut:", error);
 
+      if (error) {
+        console.error("Error al cerrar sesión:", error);
+        alert("Hubo un problema al cerrar sesión. Por favor, intenta de nuevo.");
+        return;
+      }
+
+      // Clear local state
       setCards([]);
       setTransactions([]);
       setSubscriptions([]);
 
-      // Small delay to ensure state updates or cleanup
-      setTimeout(() => {
-        window.location.href = window.location.origin + window.location.pathname;
-      }, 300);
+      // Reload the page to reset to landing page
+      // Supabase will handle the auth state automatically
+      window.location.reload();
     } catch (error) {
-      console.error("Critical error during logout:", error);
-      // Last resort forceful reload
-      window.location.href = window.location.origin + window.location.pathname;
+      console.error("Error crítico durante el cierre de sesión:", error);
+      alert("Error al cerrar sesión. Por favor, recarga la página manualmente.");
     }
   };
 
