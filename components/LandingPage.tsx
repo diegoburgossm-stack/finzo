@@ -59,9 +59,6 @@ export const LandingPage: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent pointer-events-none" />
               <img src="logo.png" alt="Finzo" className="w-16 h-16 object-contain relative z-10" />
             </div>
-            <div className="absolute -top-4 -right-4 w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-xl border border-slate-200 transform -rotate-6 animate-bounce">
-              <Sparkles className="text-blue-500 w-6 h-6" />
-            </div>
           </div>
 
           <div className="space-y-2">
@@ -147,10 +144,6 @@ export const LandingPage: React.FC = () => {
 
       </div>
 
-      {/* Footer Badge */}
-      <div className="absolute bottom-8 text-slate-600 text-xs uppercase tracking-widest font-semibold opacity-50">
-        Potenciado con IA
-      </div>
     </div>
   );
 };

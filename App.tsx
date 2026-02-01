@@ -42,7 +42,7 @@ import {
   CalendarDays,
   Repeat
 } from './components/Icons';
-import { getFinancialAdvice, extractReceiptInfo, analyzeImage } from './services/geminiService';
+import { extractReceiptInfo, analyzeImage } from './services/geminiService';
 import { LandingPage } from './components/LandingPage';
 import { useAuth } from './services/AuthContext';
 import { db } from './services/db';
@@ -111,7 +111,6 @@ function App() {
   const [isTxModalOpen, setIsTxModalOpen] = useState(false);
   const [isCardModalOpen, setIsCardModalOpen] = useState(false);
   const [isSubscriptionModalOpen, setIsSubscriptionModalOpen] = useState(false);
-  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isProcessingReceipt, setIsProcessingReceipt] = useState(false);
 
@@ -138,9 +137,7 @@ function App() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
 
-  // AI State
-  const [aiAdvice, setAiAdvice] = useState<string>('');
-  const [isAiLoading, setIsAiLoading] = useState(false);
+  // Camera Refs
 
   // Form States
   const [txForm, setTxForm] = useState({
@@ -855,14 +852,6 @@ function App() {
     });
   };
 
-  const handleGetAdvice = async () => {
-    setIsAiLoading(true);
-    setIsAiModalOpen(true);
-    setAiAdvice('');
-    const advice = await getFinancialAdvice(totalBalance, cardsWithBalances, transactions);
-    setAiAdvice(advice);
-    setIsAiLoading(false);
-  };
 
 
   const getBillingInfoForCard = (card: FinancialCard) => {
@@ -1299,7 +1288,6 @@ function App() {
           <Settings size={20} />
           <span className="font-medium">Ajustes</span>
         </button>
-        <button onClick={handleGetAdvice} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 mb-2"><Sparkles size={20} /><span className="font-medium">Asistente IA</span></button>
         <button
           onClick={handleLogout}
           className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all border border-transparent ${theme === 'dark' ? 'text-red-400 hover:bg-red-500/10 hover:border-red-500/20' : 'text-red-600 hover:bg-red-50 hover:border-red-200'}`}
@@ -1320,7 +1308,7 @@ function App() {
       <div className="flex-1 w-full lg:pl-64">
         {isMenuOpen && <div className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)} />}
         <header className={`sticky top-0 z-20 backdrop-blur-md border-b lg:hidden ${theme === 'dark' ? 'bg-[#0f172a]/80 border-slate-800' : 'bg-white/80 border-slate-200'}`}>
-          <div className="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center"><div className="flex items-center gap-3">{selectedCardId && <button onClick={() => setSelectedCardId(null)} className="p-2 -ml-2"><ArrowLeft size={20} /></button>}<h1 className={`text-xl font-black flex items-center gap-2 tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{selectedCardId ? <Wallet className="text-primary" /> : <div className={`p-1 rounded-lg ${theme === 'dark' ? 'bg-white' : 'bg-slate-100'}`}><img src="logo.png" alt="Finzo" className="w-6 h-6 object-contain" /></div>}{selectedCardId ? selectedCard?.name : <>Fin<span className="text-primary -ml-1.5">zo</span></>}</h1></div><div className="flex items-center gap-2"><button onClick={() => handleTabChange('settings')} className={`p-2 rounded-full border transition-all ${activeTab === 'settings' ? (theme === 'dark' ? 'bg-primary text-white border-primary' : 'bg-primary text-white border-primary') : (theme === 'dark' ? 'text-slate-400 bg-slate-800 border-slate-700' : 'text-slate-600 bg-slate-50 border-slate-200')}`}><Settings size={20} /></button><button onClick={handleGetAdvice} className="p-2 text-purple-400 bg-purple-500/10 rounded-full border border-purple-500/30"><Sparkles size={20} /></button></div></div>
+          <div className="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center"><div className="flex items-center gap-3">{selectedCardId && <button onClick={() => setSelectedCardId(null)} className="p-2 -ml-2"><ArrowLeft size={20} /></button>}<h1 className={`text-xl font-black flex items-center gap-2 tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{selectedCardId ? <Wallet className="text-primary" /> : <div className={`p-1 rounded-lg ${theme === 'dark' ? 'bg-white' : 'bg-slate-100'}`}><img src="logo.png" alt="Finzo" className="w-6 h-6 object-contain" /></div>}{selectedCardId ? selectedCard?.name : <>Fin<span className="text-primary -ml-1.5">zo</span></>}</h1></div><div className="flex items-center gap-2"><button onClick={() => handleTabChange('settings')} className={`p-2 rounded-full border transition-all ${activeTab === 'settings' ? (theme === 'dark' ? 'bg-primary text-white border-primary' : 'bg-primary text-white border-primary') : (theme === 'dark' ? 'text-slate-400 bg-slate-800 border-slate-700' : 'text-slate-600 bg-slate-50 border-slate-200')}`}><Settings size={20} /></button></div></div>
         </header>
         <main className="w-full max-w-7xl mx-auto px-4 py-6 min-h-[calc(100vh-140px)] relative z-10 lg:py-10 lg:px-8">
           <div key={selectedCardId || activeTab} className="page-transition">
@@ -1479,9 +1467,6 @@ function App() {
 
       <Modal isOpen={!!confirmation?.isOpen} onClose={closeConfirmation} title={confirmation?.title || ''} theme={theme}><div className="space-y-6"><p className={theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}>{confirmation?.message}</p><div className="flex gap-3"><Button variant="ghost" onClick={closeConfirmation} className="flex-1" theme={theme}>Cancelar</Button><Button variant="danger" onClick={() => confirmation?.onConfirm()} className="flex-1" theme={theme}>Confirmar</Button></div></div></Modal>
 
-      <Modal isOpen={isAiModalOpen} onClose={() => setIsAiModalOpen(false)} title="Asistente IA" theme={theme}>
-        <div className="min-h-[200px] flex flex-col">{isAiLoading ? (<div className="flex-1 flex flex-col items-center justify-center space-y-4 py-8"><div className="w-12 h-16 border-4 border-purple-500/30 rounded-full" /><div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin absolute top-0 left-0" /><p className="text-purple-300">Analizando...</p></div>) : (<div className={`prose prose-sm ${theme === 'dark' ? 'prose-invert' : ''}`}>{aiAdvice.split('\n').map((line, i) => (<p key={i} className={`mb-2 ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{line}</p>))}<div className={`mt-6 pt-4 border-t text-center ${theme === 'dark' ? 'border-slate-700' : 'border-slate-200'}`}><Button variant="ghost" onClick={() => setIsAiModalOpen(false)} theme={theme}>Cerrar</Button></div></div>)}</div>
-      </Modal>
 
       <Modal isOpen={isSubscriptionModalOpen} onClose={() => setIsSubscriptionModalOpen(false)} title={editingSubscription ? "Editar Suscripción" : "Nueva Suscripción"} theme={theme}>
         <div className="space-y-4">
