@@ -959,33 +959,72 @@ function App() {
     </div>
   );
 
-  const renderCardsList = () => (
-    <div className="space-y-8 pt-6 pb-32">
-      <div className="flex justify-between items-end px-2">
-        <div>
-          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>Billetera</h2>
-          <p className="text-slate-400 text-sm mt-1">Gestiona tus medios de pago. Arrastra para reordenar.</p>
+  const renderCardsList = () => {
+    // Group cards by type
+    const groupedCards = {
+      checking: cardsWithBalances.filter(c => c.type === 'checking' || c.type === 'debit'),
+      credit: cardsWithBalances.filter(c => c.type === 'credit'),
+    };
+
+    const getTypeLabel = (type: 'checking' | 'credit') => {
+      switch (type) {
+        case 'checking': return 'Cuentas y Débito';
+        case 'credit': return 'Tarjetas de Crédito';
+      }
+    };
+
+    return (
+      <div className="space-y-8 pt-6 pb-32">
+        <div className="flex justify-between items-end px-2">
+          <div>
+            <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>Billetera</h2>
+            <p className="text-slate-400 text-sm mt-1">Gestiona tus medios de pago. Arrastra para reordenar.</p>
+          </div>
+          <Button onClick={() => handleOpenCardModal()} className="shadow-lg hover:shadow-primary/25 transition-all"><Plus size={18} /> <span className="hidden sm:inline">Nueva Tarjeta</span></Button>
         </div>
-        <Button onClick={() => handleOpenCardModal()} className="shadow-lg hover:shadow-primary/25 transition-all"><Plus size={18} /> <span className="hidden sm:inline">Nueva Tarjeta</span></Button>
+
+        {cardsWithBalances.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 text-slate-500 border-2 border-dashed border-slate-700/50 rounded-3xl bg-slate-800/20">
+            <div className="p-6 bg-slate-800 rounded-full mb-4 opacity-50"><CreditCard size={48} className="text-slate-400" /></div>
+            <p className="text-lg font-medium">No tienes tarjetas registradas</p>
+            <Button onClick={() => handleOpenCardModal()} className="mt-4"><Plus size={20} /> Agregar Tarjeta</Button>
+          </div>
+        ) : (
+          <div className="space-y-10">
+            {(['checking', 'credit'] as const).map(type => {
+              const cards = groupedCards[type];
+              if (cards.length === 0) return null;
+
+              return (
+                <div key={type} className="space-y-4">
+                  <div className="flex items-center gap-3 px-2">
+                    <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-slate-200' : 'text-slate-700'}`}>
+                      {getTypeLabel(type)}
+                    </h3>
+                    <span className={`text-sm px-2.5 py-0.5 rounded-full ${theme === 'dark' ? 'bg-slate-700 text-slate-300' : 'bg-slate-200 text-slate-600'}`}>
+                      {cards.length}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 justify-items-center">
+                    {cards.map((card, index) => {
+                      const globalIndex = cardsWithBalances.findIndex(c => c.id === card.id);
+                      return (
+                        <div key={card.id} className={`w-full max-w-sm group relative transition-all duration-300 ${draggedCardIndex === globalIndex ? 'opacity-40 scale-95 border-2 border-dashed border-slate-500 rounded-2xl' : 'hover:-translate-y-2'}`} draggable onDragStart={() => handleDragStart(globalIndex)} onDragOver={handleDragOver} onDrop={() => handleDrop(globalIndex)} style={{ cursor: 'move' }}>
+                          <div className={`absolute inset-4 rounded-[2rem] blur-xl opacity-0 group-hover:opacity-40 transition-opacity duration-500 ${card.color}`} />
+                          <CardComponent card={card} onClick={() => setSelectedCardId(card.id)} isDetailed onEdit={(e) => { e?.stopPropagation(); handleOpenCardModal(card); }} onDelete={(e) => { e?.stopPropagation(); requestDeleteCard(card.id); }} />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
-      {cardsWithBalances.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-slate-500 border-2 border-dashed border-slate-700/50 rounded-3xl bg-slate-800/20">
-          <div className="p-6 bg-slate-800 rounded-full mb-4 opacity-50"><CreditCard size={48} className="text-slate-400" /></div>
-          <p className="text-lg font-medium">No tienes tarjetas registradas</p>
-          <Button onClick={() => handleOpenCardModal()} className="mt-4"><Plus size={20} /> Agregar Tarjeta</Button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 justify-items-center">
-          {cardsWithBalances.map((card, index) => (
-            <div key={card.id} className={`w-full max-w-sm group relative transition-all duration-300 ${draggedCardIndex === index ? 'opacity-40 scale-95 border-2 border-dashed border-slate-500 rounded-2xl' : 'hover:-translate-y-2'}`} draggable onDragStart={() => handleDragStart(index)} onDragOver={handleDragOver} onDrop={() => handleDrop(index)} style={{ cursor: 'move' }}>
-              <div className={`absolute inset-4 rounded-[2rem] blur-xl opacity-0 group-hover:opacity-40 transition-opacity duration-500 ${card.color}`} />
-              <CardComponent card={card} onClick={() => setSelectedCardId(card.id)} isDetailed onEdit={(e) => { e?.stopPropagation(); handleOpenCardModal(card); }} onDelete={(e) => { e?.stopPropagation(); requestDeleteCard(card.id); }} />
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+    );
+  };
 
   const renderTransactionsView = () => {
     return (
