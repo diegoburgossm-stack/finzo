@@ -50,7 +50,9 @@ import {
   Smartphone,
   CheckCircle,
   Repeat,
-  CalendarDays
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 export {
@@ -104,5 +106,7 @@ export {
   Smartphone,
   CheckCircle,
   Repeat,
-  CalendarDays
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight
 };
