@@ -48,7 +48,6 @@ import { useAuth } from './services/AuthContext';
 import { db } from './services/db';
 import { supabase } from './services/supabaseClient';
 import { ProfileComponent } from './components/Profile';
-import { CardStack } from './components/CardStack';
 
 // Default Data
 const DEFAULT_CARDS: FinancialCard[] = [
@@ -885,30 +884,28 @@ function App() {
       </div>
       <div className="flex justify-between items-center px-1 mb-2 lg:mb-4">
         <h3 className={`font-bold ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'} lg:text-xl`}>Mis Tarjetas</h3>
-        {cardsWithBalances.length > 0 && (
-          <button
-            onClick={() => handleTabChange('cards')}
-            className="text-xs text-primary font-bold hover:underline"
+      </div>
+      <div className="overflow-x-auto py-4 -mx-4 px-4 hide-scroll flex snap-x snap-mandatory gap-4 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:overflow-visible lg:snap-none lg:mx-0 lg:px-0 lg:py-0 lg:gap-6">
+        {cardsWithBalances.map((card, index) => (
+          <div
+            key={card.id}
+            className={`snap-center shrink-0 w-[72vw] max-w-[280px] lg:w-full transition-all duration-300 ${draggedCardIndex === index ? 'opacity-40 scale-95' : 'opacity-100'}`}
+            draggable
+            onDragStart={() => handleDragStart(index)}
+            onDragOver={handleDragOver}
+            onDrop={() => handleDrop(index)}
+            style={{ cursor: 'move' }}
           >
-            Ver Todas
-          </button>
+            <CardComponent card={card} onClick={() => setSelectedCardId(card.id)} compact={true} />
+          </div>
+        ))}
+        {cards.length === 0 && (
+          <div onClick={() => handleOpenCardModal()} className={`w-[72vw] max-w-[280px] h-[160px] border-2 border-dashed ${theme === 'dark' ? 'border-slate-700 text-slate-500 hover:bg-slate-800/50' : 'border-slate-300 text-slate-400 hover:bg-slate-100'} rounded-xl flex flex-col items-center justify-center hover:text-primary hover:border-primary cursor-pointer transition-all shrink-0 snap-center lg:w-full lg:h-auto lg:aspect-video`}>
+            <Plus size={24} />
+            <span className="mt-2 text-sm font-medium">Agregar</span>
+          </div>
         )}
       </div>
-
-      {cardsWithBalances.length === 0 ? (
-        <div onClick={() => handleOpenCardModal()} className={`w-full max-w-md mx-auto h-[200px] border-2 border-dashed ${theme === 'dark' ? 'border-slate-700 text-slate-500 hover:bg-slate-800/50' : 'border-slate-300 text-slate-400 hover:bg-slate-100'} rounded-xl flex flex-col items-center justify-center hover:text-primary hover:border-primary cursor-pointer transition-all`}>
-          <Plus size={32} />
-          <span className="mt-2 text-sm font-medium">Agregar Primera Tarjeta</span>
-        </div>
-      ) : (
-        <CardStack
-          cards={cardsWithBalances}
-          onCardClick={(cardId) => setSelectedCardId(cardId)}
-          onEdit={handleOpenCardModal}
-          onDelete={(cardId) => requestDeleteCard(cardId)}
-          theme={theme}
-        />
-      )}
       <section className="pt-2 lg:pt-6">
         <TransactionList transactions={sortedTransactions.slice(0, 5)} cards={cards} onEdit={handleOpenTxModal} onDelete={requestDeleteTx} title="Actividad Reciente" theme={theme} />
         {sortedTransactions.length > 5 && (
